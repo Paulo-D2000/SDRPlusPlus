@@ -8,6 +8,7 @@
 #include <codec2.h>
 #include <golay24.h>
 #include <lsf_decode.h>
+#include <cstring>
 
 extern "C" {
 #include <correct.h>
@@ -275,6 +276,8 @@ namespace dsp {
         int outCount = 0;
     };
 
+    M17LSF g_lsf; // LSF Copy 
+
     class M17LSFDecoder : public block {
     public:
         M17LSFDecoder() {}
@@ -335,7 +338,7 @@ namespace dsp {
 
             // Decode it and call the handler
             M17LSF decLsf = M17DecodeLSF(lsf);
-            if (decLsf.valid) { _handler(decLsf, _ctx); }
+            if (decLsf.valid) { g_lsf = decLsf; _handler(decLsf, _ctx);}
 
             return count;
         }
@@ -505,6 +508,21 @@ namespace dsp {
                 return count;
             }
 
+            // get last lsf & check if valid
+            if(g_lsf.valid){
+                if(g_lsf.encryptionType != M17_ENCRYPTION_NONE){ // if encrypted, mute stream
+                    memset(floatAudio, 0, sampsPerC2FrameDouble * sizeof(float));
+            
+                    // Interleave into stereo samples
+                    volk_32f_x2_interleave_32fc((lv_32fc_t*)out.writeBuf, floatAudio, floatAudio, sampsPerC2FrameDouble);
+            
+                    _in->flush();
+            
+                    if (!out.swap(sampsPerC2FrameDouble)) { return -1; }
+                    return count;
+                }
+            }
+
             // Decode both parts using codec
             codec2_decode(codec, int16Audio, &_in->readBuf[2]);
             codec2_decode(codec, &int16Audio[sampsPerC2Frame], &_in->readBuf[2 + 8]);
@@ -621,7 +639,7 @@ namespace dsp {
                 if (partId == 5) {
                     newFrame = false;
                     M17LSF decLsf = M17DecodeLSF(lsf);
-                    if (decLsf.valid) { _handler(decLsf, _ctx); }
+                    if (decLsf.valid) { g_lsf = decLsf; _handler(decLsf, _ctx);}
                 }
             }
 
