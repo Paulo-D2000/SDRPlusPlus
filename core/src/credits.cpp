@@ -12,6 +12,7 @@ namespace sdrpp_credits {
         "Howard0su",
         "John Donkersley",
         "Joshua Kimsey",
+        "Manawyrm",
         "Martin Hauke",
         "Marvin Sinister",
         "Maxime Biette",
@@ -21,7 +22,6 @@ namespace sdrpp_credits {
         "Shuyuan Liu",
         "Syne Ardwin (WI9SYN)",
         "Szymon Zakrent",
-        "Tobias Mädel",
         "Youssef Touil",
         "Zimm"
     };
@@ -41,8 +41,11 @@ namespace sdrpp_credits {
         "CaribouLabs",
         "Ettus Research",
         "Howard Su",
+        "MicroPhase",
+        "Microtelecom",
         "MyriadRF",
         "Nuand",
+        "RFNM",
         "RFspace",
         "RTL-SDRblog",
         "SDRplay"
@@ -54,6 +57,7 @@ namespace sdrpp_credits {
         "Croccydile",
         "Dale L Puckett (K0HYD)",
         "Daniele D'Agnelli",
+        "David Taylor (GM8ARV)",
         "D. Jones",
         "Dexruus",
         "EB3FRN",
@@ -81,6 +85,7 @@ namespace sdrpp_credits {
         "Syne Ardwin (WI9SYN)",
         "W4IPA",
         "William Arcand (W1WRA)",
+        "William Pitchford",
         "Yves Rougy",
         "Zipper"
     };

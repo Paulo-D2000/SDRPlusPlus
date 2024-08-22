@@ -15,7 +15,7 @@ SDR++ is a cross-platform and open source SDR software with the aim of being blo
 * Multi VFO
 * Wide hardware support (both through SoapySDR and dedicated modules)
 * SIMD accelerated DSP
-* Cross-platform (Windows, Linux, OSX and BSD)
+* Cross-platform (Windows, Linux, MacOS and BSD)
 * Full waterfall update when possible. Makes browsing signals easier and more pleasant
 * Modular design (easily write your own plugins)
 
@@ -41,14 +41,13 @@ To create a desktop shortcut, rightclick the exe and select `Send to -> Desktop 
 
 Download the latest release from [the Releases page](https://github.com/AlexandreRouma/SDRPlusPlus/releases) and extract to the directory of your choice.
 
-Then, run:
+Then, use apt to install it:
 
 ```sh
-sudo apt install libfftw3-dev libglfw3-dev libvolk2-dev libsoapysdr-dev libairspyhf-dev libiio-dev libad9361-dev librtaudio-dev libhackrf-dev
-sudo dpkg -i sdrpp_debian_amd64.deb
+sudo apt install path/to/the/sdrpp_debian_amd64.deb
 ```
 
-If `libvolk2-dev` is not available, use `libvolk1-dev`.
+**IMPORTANT: You must install the drivers for your SDR. Follow instructions from your manufacturer as to how to do this on your particular distro.**
 
 ### Arch-based
 
@@ -76,7 +75,7 @@ The preferred IDE is [VS Code](https://code.visualstudio.com/) in order to have 
 
 * [cmake](https://cmake.org)
 * [vcpkg](https://vcpkg.io)
-* [PothosSDR](https://github.com/pothosware/PothosSDR) (This will install libraries for most SDRs)
+* [PothosSDR](https://github.com/pothosware/PothosSDR) (This will install libraries for most SDRs. You have to install it in `C:/Program Files/PothosSDR`)
 * [RtAudio](https://www.music.mcgill.ca/~gary/rtaudio/) (You have to build and install it in `C:/Program Files (x86)/RtAudio/`)
 
 After this, install the following dependencies using vcpkg:
@@ -115,16 +114,16 @@ You will next need to edit the `root_dev/config.json` file to point to the modul
 From the top directory, you can simply run:
 
 ```bat
-./build/Release/sdrpp.exe -r root_dev -s
+./build/Release/sdrpp.exe -r root_dev -c
 ```
 
 Or, if you wish to run from the build directory e.g. `build/Release` and adapt the relative path to the `root_dev` folder:
 
 ```bat
-./sdrpp.exe -r ../../root_dev -s
+./sdrpp.exe -r ../../root_dev -c
 ```
 
-The optional `-s` argument is for keeping the console active in order to see the error messages.
+The optional `-c` argument is for keeping the console active in order to see the error messages.
 
 Because all the paths are relative, for the rest of the command line instructions we are going to assume you are running from the top directory using the former command.
 As mentioned previously you need to edit `root_dev/config.json` to add the modules that were built. From the default configuration file you need to add the paths in the `modules` section. Add to this list all the modules you wish to use.
@@ -135,7 +134,6 @@ As mentioned previously you need to edit `root_dev/config.json` to add the modul
     "./build/radio/Release/radio.dll",
     "./build/recorder/Release/recorder.dll",
     "./build/rtl_tcp_source/Release/rtl_tcp_source.dll",
-    "./build/soapy_source/Release/soapy_source.dll",
     "./build/audio_sink/Release/audio_sink.dll"
 ]
 ...
@@ -166,7 +164,6 @@ The modules built will be some of the following (Repeat the instructions above f
 * `build/recorder/Release/`
 * `build/rtl_tcp_source/Release/`
 * `build/spyserver_source/Release/`
-* `build/soapy_source/Release/`
 * `build/airspyhf_source/Release/`
 * `build/plutosdr_source/Release/`
 * `build/audio_sink/Release/`
@@ -176,13 +173,9 @@ The modules built will be some of the following (Repeat the instructions above f
 ## Select which modules you wish to build
 
 Depending on which module you want to build, you will need to install some additional dependencies.
-Here are listed every module that requires addition dependencies. If a module enabled by default and you do not wish to install a particular dependency (or can't, eg. the BladeRF module on Debian Buster),
-you can disable it using the module parameter listed in the table below
+Please refer to the module list table further down in this readme for the names, dependencies and build options of each module.
 
-* soapy_source: SoapySDR + drivers for each SDRs (see SoapySDR docs)
-* airspyhf_source: libairspyhf
-* plutosdr_source: libiio, libad9361
-* audio_sink: librtaudio-dev
+The build options are then passed to the cmake command as such `cmake .. -DOPTION_NAME_HERE=ON -DANOTHER_OPTION_HERE=OFF` etc...
 
 ## Install dependencies
 
@@ -231,7 +224,6 @@ Then, you will need to edit the `root_dev/config.json` file to point to the modu
     "./build/radio/radio.so",
     "./build/recorder/recorder.so",
     "./build/rtl_tcp_source/rtl_tcp_source.so",
-    "./build/soapy_source/soapy_source.so",
     "./build/audio_sink/audio_sink.so"
 ]
 ...
@@ -329,21 +321,25 @@ Modules in beta are still included in releases for the most part but not enabled
 |----------------------|------------|-------------------|--------------------------------|:---------------:|:-----------------------:|:---------------------------:|
 | airspy_source        | Working    | libairspy         | OPT_BUILD_AIRSPY_SOURCE        | ✅              | ✅                     | ✅                         |
 | airspyhf_source      | Working    | libairspyhf       | OPT_BUILD_AIRSPYHF_SOURCE      | ✅              | ✅                     | ✅                         |
+| audio_source         | Working    | rtaudio           | OPT_BUILD_AUDIO_SOURCE         | ✅              | ✅                     | ✅                         |
 | bladerf_source       | Working    | libbladeRF        | OPT_BUILD_BLADERF_SOURCE       | ⛔              | ✅ (not Debian Buster) | ✅                         |
 | file_source          | Working    | -                 | OPT_BUILD_FILE_SOURCE          | ✅              | ✅                     | ✅                         |
 | hackrf_source        | Working    | libhackrf         | OPT_BUILD_HACKRF_SOURCE        | ✅              | ✅                     | ✅                         |
+| harogic_source       | Unfinished | htra_api          | OPT_BUILD_HAROGIC_SOURCE       | ⛔              | ⛔                     | ⛔                         |
 | hermes_source        | Beta       | -                 | OPT_BUILD_HERMES_SOURCE        | ✅              | ✅                     | ✅                         |
 | limesdr_source       | Working    | liblimesuite      | OPT_BUILD_LIMESDR_SOURCE       | ⛔              | ✅                     | ✅                         |
-| perseus_source       | Beta       | libperseus-sdr    | OPT_BUILD_PERSEUS_SOURCE       | ⛔              | ⛔                     | ⛔                         |
+| network_source       | Unfinished | -                 | OPT_BUILD_NETWORK_SOURCE       | ✅              | ✅                     | ⛔                         |
+| perseus_source       | Beta       | libperseus-sdr    | OPT_BUILD_PERSEUS_SOURCE       | ⛔              | ✅                     | ✅                         |
 | plutosdr_source      | Working    | libiio, libad9361 | OPT_BUILD_PLUTOSDR_SOURCE      | ✅              | ✅                     | ✅                         |
+| rfnm_source          | Beta       | librfnm           | OPT_BUILD_RFNM_SOURCE          | ⛔              | ✅                     | ✅                         |
 | rfspace_source       | Working    | -                 | OPT_BUILD_RFSPACE_SOURCE       | ✅              | ✅                     | ✅                         |
 | rtl_sdr_source       | Working    | librtlsdr         | OPT_BUILD_RTL_SDR_SOURCE       | ✅              | ✅                     | ✅                         |
 | rtl_tcp_source       | Working    | -                 | OPT_BUILD_RTL_TCP_SOURCE       | ✅              | ✅                     | ✅                         |
 | sdrplay_source       | Working    | SDRplay API       | OPT_BUILD_SDRPLAY_SOURCE       | ⛔              | ✅                     | ✅                         |
 | sdrpp_server_source  | Working    | -                 | OPT_BUILD_SDRPP_SERVER_SOURCE  | ✅              | ✅                     | ✅                         |
-| soapy_source         | Working    | soapysdr          | OPT_BUILD_SOAPY_SOURCE         | ✅              | ✅                     | ✅                         |
+| soapy_source         | Deprecated | soapysdr          | OPT_BUILD_SOAPY_SOURCE         | ⛔              | ⛔                     | ⛔                         |
 | spectran_source      | Unfinished | RTSA Suite        | OPT_BUILD_SPECTRAN_SOURCE      | ⛔              | ⛔                     | ⛔                         |
-| spectran_http_source | Unfinished | -                 | OPT_BUILD_SPECTRAN_HTTP_SOURCE | ✅              | ✅                     | ⛔                         |
+| spectran_http_source | Beta       | -                 | OPT_BUILD_SPECTRAN_HTTP_SOURCE | ✅              | ✅                     | ⛔                         |
 | spyserver_source     | Working    | -                 | OPT_BUILD_SPYSERVER_SOURCE     | ✅              | ✅                     | ✅                         |
 | usrp_source          | Beta       | libuhd            | OPT_BUILD_USRP_SOURCE          | ⛔              | ⛔                     | ⛔                         |
 
@@ -362,11 +358,11 @@ Modules in beta are still included in releases for the most part but not enabled
 | Name                | Stage      | Dependencies | Option                        | Built by default| Built in Release | Enabled in SDR++ by default |
 |---------------------|------------|--------------|-------------------------------|:---------------:|:----------------:|:---------------------------:|
 | atv_decoder         | Unfinished | -            | OPT_BUILD_ATV_DECODER         | ⛔              | ⛔              | ⛔                         |
-| dmr_decoder         | Unfinished | -            | OPT_BUILD_DMR_DECODER         | ⛔              | ⛔              | ⛔                         |
 | falcon9_decoder     | Unfinished | ffplay       | OPT_BUILD_FALCON9_DECODER     | ⛔              | ⛔              | ⛔                         |
 | kgsstv_decoder      | Unfinished | -            | OPT_BUILD_KGSSTV_DECODER      | ⛔              | ⛔              | ⛔                         |
-| m17_decoder         | Beta       | -            | OPT_BUILD_M17_DECODER         | ⛔              | ✅              | ⛔                         |
+| m17_decoder         | Working    | -            | OPT_BUILD_M17_DECODER         | ⛔              | ✅              | ⛔                         |
 | meteor_demodulator  | Working    | -            | OPT_BUILD_METEOR_DEMODULATOR  | ✅              | ✅              | ⛔                         |
+| pager_decoder       | Unfinished | -            | OPT_BUILD_PAGER_DECODER       | ⛔              | ⛔              | ⛔                         |
 | radio               | Working    | -            | OPT_BUILD_RADIO               | ✅              | ✅              | ✅                         |
 | weather_sat_decoder | Unfinished | -            | OPT_BUILD_WEATHER_SAT_DECODER | ⛔              | ⛔              | ⛔                         |
 
@@ -376,6 +372,7 @@ Modules in beta are still included in releases for the most part but not enabled
 |---------------------|------------|--------------|-----------------------------|:----------------:|:----------------:|:---------------------------:|
 | discord_integration | Working    | -            | OPT_BUILD_DISCORD_PRESENCE  | ✅              | ✅               | ⛔                         |
 | frequency_manager   | Working    | -            | OPT_BUILD_FREQUENCY_MANAGER | ✅              | ✅               | ✅                         |
+| iq_exporter         | Working    | -            | OPT_BUILD_IQ_EXPORTER       | ✅              | ✅               | ⛔                         |
 | recorder            | Working    | -            | OPT_BUILD_RECORDER          | ✅              | ✅               | ✅                         |
 | rigctl_client       | Unfinished | -            | OPT_BUILD_RIGCTL_CLIENT     | ✅              | ✅               | ⛔                         |
 | rigctl_server       | Working    | -            | OPT_BUILD_RIGCTL_SERVER     | ✅              | ✅               | ✅                         |
@@ -431,6 +428,7 @@ I will soon publish a contributing.md listing the code style to use.
 * Croccydile
 * Dale L Puckett (K0HYD)
 * [Daniele D'Agnelli](https://linkedin.com/in/dagnelli)
+* [David Taylor (GM8ARV)](https://twitter.com/gm8arv)
 * D. Jones
 * Dexruus
 * [EB3FRN](https://www.eb3frn.net/)
@@ -458,6 +456,7 @@ I will soon publish a contributing.md listing the code style to use.
 * Syne Ardwin (WI9SYN)
 * [W4IPA](https://twitter.com/W4IPAstroke5)
 * William Arcand (W1WRA)
+* William Pitchford
 * [Yves Rougy](https://www.twitch.tv/yorzian)
 * [Zipper](https://github.com/reppiZ)
 
@@ -473,6 +472,7 @@ I will soon publish a contributing.md listing the code style to use.
 * [Howard0su](https://github.com/howard0su)
 * John Donkersley
 * [Joshua Kimsey](https://github.com/JoshuaKimsey)
+* [Manawyrm](https://github.com/Manawyrm)
 * [Martin Hauke](https://github.com/mnhauke)
 * [Marvin Sinister](https://github.com/marvin-sinister)
 * [Maxime Biette](https://github.com/mbiette)
@@ -482,7 +482,6 @@ I will soon publish a contributing.md listing the code style to use.
 * [Shuyuan Liu](https://github.com/shuyuan-liu)
 * [Syne Ardwin (WI9SYN)](https://esaille.me/)
 * [Szymon Zakrent](https://github.com/zakrent)
-* [Tobias Mädel](https://github.com/Manawyrm)
 * Youssef Touil
 * [Zimm](https://github.com/invader-zimm)
 

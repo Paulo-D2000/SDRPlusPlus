@@ -137,6 +137,10 @@ public:
         hackrf_device_list_t* _devList = hackrf_device_list();
 
         for (int i = 0; i < _devList->devicecount; i++) {
+            // Skip devices that are in use
+            if (_devList->serial_numbers[i] == NULL) { continue; }
+
+            // Save the device serial number
             devList.push_back(_devList->serial_numbers[i]);
             devListTxt += (char*)(_devList->serial_numbers[i] + 16);
             devListTxt += '\0';
@@ -300,6 +304,7 @@ private:
         SmGui::ForceSync();
         if (SmGui::Combo(CONCAT("##_hackrf_dev_sel_", _this->name), &_this->devId, _this->devListTxt.c_str())) {
             _this->selectBySerial(_this->devList[_this->devId]);
+            core::setInputSampleRate(_this->sampleRate);
             config.acquire();
             config.conf["device"] = _this->selectedSerial;
             config.release(true);

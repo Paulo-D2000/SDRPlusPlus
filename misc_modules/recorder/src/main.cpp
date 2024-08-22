@@ -21,6 +21,7 @@
 #include <core.h>
 #include <utils/optionlist.h>
 #include <utils/wav.h>
+#include <radio_interface.h>
 
 #define CONCAT(a, b) ((std::string(a) + b).c_str())
 
@@ -248,7 +249,6 @@ private:
         }
         ImGui::Columns(1, CONCAT("EndRecorderModeColumns##_", _this->name), false);
         ImGui::EndGroup();
-        if (_this->recording) { style::endDisabled(); }
 
         // Recording path
         if (_this->folderSelect.render("##_recorder_fold_" + _this->name)) {
@@ -283,8 +283,11 @@ private:
             config.release(true);
         }
 
+        if (_this->recording) { style::endDisabled(); }
+
         // Show additional audio options
         if (_this->recMode == RECORDER_MODE_AUDIO) {
+            if (_this->recording) { style::beginDisabled(); }
             ImGui::LeftLabel("Stream");
             ImGui::FillWidth();
             if (ImGui::Combo(CONCAT("##_recorder_stream_", _this->name), &_this->streamId, _this->audioStreams.txt)) {
@@ -293,6 +296,7 @@ private:
                 config.conf[_this->name]["audioStream"] = _this->audioStreams.key(_this->streamId);
                 config.release(true);
             }
+            if (_this->recording) { style::endDisabled(); }
 
             _this->updateAudioMeter(_this->audioLvl);
             ImGui::FillWidth();
@@ -437,6 +441,17 @@ private:
         if (dbLvl.r > lvl.r) { lvl.r = dbLvl.r; }
     }
 
+    std::map<int, const char*> radioModeToString = {
+        { RADIO_IFACE_MODE_NFM, "NFM" },
+        { RADIO_IFACE_MODE_WFM, "WFM" },
+        { RADIO_IFACE_MODE_AM,  "AM"  },
+        { RADIO_IFACE_MODE_DSB, "DSB" },
+        { RADIO_IFACE_MODE_USB, "USB" },
+        { RADIO_IFACE_MODE_CW,  "CW"  },
+        { RADIO_IFACE_MODE_LSB, "LSB" },
+        { RADIO_IFACE_MODE_RAW, "RAW" }
+    };
+
     std::string genFileName(std::string templ, std::string type, std::string name) {
         // Get data
         time_t now = time(0);
@@ -455,6 +470,7 @@ private:
         char dayStr[128];
         char monStr[128];
         char yearStr[128];
+        const char* modeStr = "Unknown";
         sprintf(freqStr, "%.0lfHz", freq);
         sprintf(hourStr, "%02d", ltm->tm_hour);
         sprintf(minStr, "%02d", ltm->tm_min);
@@ -462,6 +478,11 @@ private:
         sprintf(dayStr, "%02d", ltm->tm_mday);
         sprintf(monStr, "%02d", ltm->tm_mon + 1);
         sprintf(yearStr, "%02d", ltm->tm_year + 1900);
+        if (core::modComManager.getModuleName(name) == "radio") {
+            int mode = -1;
+            core::modComManager.callInterface(name, RADIO_IFACE_CMD_GET_MODE, NULL, &mode);
+            if (mode >= 0) { modeStr = radioModeToString[mode]; };
+        }
 
         // Replace in template
         templ = std::regex_replace(templ, std::regex("\\$t"), type);
@@ -472,6 +493,7 @@ private:
         templ = std::regex_replace(templ, std::regex("\\$d"), dayStr);
         templ = std::regex_replace(templ, std::regex("\\$M"), monStr);
         templ = std::regex_replace(templ, std::regex("\\$y"), yearStr);
+        templ = std::regex_replace(templ, std::regex("\\$r"), modeStr);
         return templ;
     }
 

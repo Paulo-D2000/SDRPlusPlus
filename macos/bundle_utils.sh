@@ -26,7 +26,8 @@ bundle_is_not_to_be_installed() {
     if [ "$1" = "CFNetwork" ]; then echo 1; fi
     if [ "$1" = "SystemConfiguration" ]; then echo 1; fi
     if [ "$1" = "Security" ]; then echo 1; fi
-    if [ "$1" = "AppleFSCompression" ]; then echo 1; fi    
+    if [ "$1" = "AppleFSCompression" ]; then echo 1; fi
+    if [ "$1" = "libsdrplay_api.so.3.14" ]; then echo 1; fi
 }
 
 # ========================= FOR INTERNAL USE ONLY =========================
@@ -81,7 +82,7 @@ bundle_find_full_path() {
 
         # Correct dep path
         echo $RPATH/$RPATH_NEXT
-        return
+        return -1
     done
 
     # Search other common paths

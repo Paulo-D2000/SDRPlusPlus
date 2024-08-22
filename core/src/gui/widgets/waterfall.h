@@ -90,33 +90,6 @@ namespace ImGui {
         float* getFFTBuffer();
         void pushFFT();
 
-        inline void doZoom(int offset, int width, int outWidth, float* data, float* out) {
-            // NOTE: REMOVE THAT SHIT, IT'S JUST A HACKY FIX
-            if (offset < 0) {
-                offset = 0;
-            }
-            if (width > 524288) {
-                width = 524288;
-            }
-
-            float factor = (float)width / (float)outWidth;
-            float sFactor = ceilf(factor);
-            float uFactor;
-            float id = offset;
-            float maxVal;
-            int sId;
-            for (int i = 0; i < outWidth; i++) {
-                maxVal = -INFINITY;
-                sId = (int)id;
-                uFactor = (sId + sFactor > rawFFTSize) ? sFactor - ((sId + sFactor) - rawFFTSize) : sFactor;
-                for (int j = 0; j < uFactor; j++) {
-                    if (data[sId + j] > maxVal) { maxVal = data[sId + j]; }
-                }
-                out[i] = maxVal;
-                id += factor;
-            }
-        }
-
         void updatePallette(float colors[][3], int colorCount);
         void updatePalletteFromArray(float* colors, int colorCount);
 
@@ -172,6 +145,9 @@ namespace ImGui {
         void setFFTSmoothing(bool enabled);
         void setFFTSmoothingSpeed(float speed);
 
+        void setSNRSmoothing(bool enabled);
+        void setSNRSmoothingSpeed(float speed);
+
         float* acquireLatestFFT(int& width);
         void releaseLatestFFT();
 
@@ -185,7 +161,7 @@ namespace ImGui {
         bool mouseInFFT = false;
         bool mouseInWaterfall = false;
 
-        float selectedVFOSNR = NAN;
+        float selectedVFOSNR = 0.0f;
 
         bool centerFrequencyLocked = false;
 
@@ -331,8 +307,12 @@ namespace ImGui {
         float fftHoldSpeed = 0.3f;
 
         bool fftSmoothing = false;
-        float smoothingAlpha = 0.5;
-        float smoothingBeta = 0.5;
+        float fftSmoothingAlpha = 0.5;
+        float fftSmoothingBeta = 0.5;
+
+        bool snrSmoothing = false;
+        float snrSmoothingAlpha = 0.5;
+        float snrSmoothingBeta = 0.5;
 
         // UI Select elements
         bool fftResizeSelect = false;

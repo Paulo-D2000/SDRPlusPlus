@@ -119,6 +119,8 @@ int sdrpp_main(int argc, char* argv[]) {
     defConfig["fftHoldSpeed"] = 60;
     defConfig["fftSmoothing"] = false;
     defConfig["fftSmoothingSpeed"] = 100;
+    defConfig["snrSmoothing"] = false;
+    defConfig["snrSmoothingSpeed"] = 20;
     defConfig["fastFFT"] = false;
     defConfig["fftHeight"] = 300;
     defConfig["fftRate"] = 20;
@@ -179,6 +181,10 @@ int sdrpp_main(int argc, char* argv[]) {
     defConfig["moduleInstances"]["LimeSDR Source"]["enabled"] = true;
     defConfig["moduleInstances"]["PlutoSDR Source"]["module"] = "plutosdr_source";
     defConfig["moduleInstances"]["PlutoSDR Source"]["enabled"] = true;
+    defConfig["moduleInstances"]["PerseusSDR Source"]["module"] = "perseus_source";
+    defConfig["moduleInstances"]["PerseusSDR Source"]["enabled"] = true;
+    defConfig["moduleInstances"]["RFNM Source"]["module"] = "rfnm_source";
+    defConfig["moduleInstances"]["RFNM Source"]["enabled"] = true;
     defConfig["moduleInstances"]["RFspace Source"]["module"] = "rfspace_source";
     defConfig["moduleInstances"]["RFspace Source"]["enabled"] = true;
     defConfig["moduleInstances"]["RTL-SDR Source"]["module"] = "rtl_sdr_source";
@@ -189,8 +195,6 @@ int sdrpp_main(int argc, char* argv[]) {
     defConfig["moduleInstances"]["SDRplay Source"]["enabled"] = true;
     defConfig["moduleInstances"]["SDR++ Server Source"]["module"] = "sdrpp_server_source";
     defConfig["moduleInstances"]["SDR++ Server Source"]["enabled"] = true;
-    defConfig["moduleInstances"]["SoapySDR Source"]["module"] = "soapy_source";
-    defConfig["moduleInstances"]["SoapySDR Source"]["enabled"] = true;
     defConfig["moduleInstances"]["SpyServer Source"]["module"] = "spyserver_source";
     defConfig["moduleInstances"]["SpyServer Source"]["enabled"] = true;
 
